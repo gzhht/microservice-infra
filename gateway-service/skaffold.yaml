@@ -1,0 +1,10 @@
+apiVersion: skaffold/v2beta22
+kind: Config
+metadata:
+  name: gateway-service
+build:
+  artifacts:
+    - image: piomin/gateway
+      jib: {}
+  tagPolicy:
+    gitCommit: {}
