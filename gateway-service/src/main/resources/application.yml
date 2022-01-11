@@ -6,8 +6,13 @@ spring:
     #   ribbon:
     #     enabled: false
     gateway:
-      default-filters:
-        - StripPrefix=1
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+            - GET
+            - POST
       discovery:
         locator:
           enabled: true
@@ -16,18 +21,21 @@ spring:
           uri: http://employee
           predicates:
             - Path=/employee/**
+            - Method=GET,POST
           filters:
             - RewritePath=/employee/(?<path>.*), /$\{path}
         - id: department
           uri: http://department
           predicates:
             - Path=/department/**
+            - Method=GET,POST
           filters:
             - RewritePath=/department/(?<path>.*), /$\{path}
         - id: organization
           uri: http://organization
           predicates:
             - Path=/organization/**
+            - Method=GET,POST
           filters:
             - RewritePath=/organization/(?<path>.*), /$\{path}
 logging:
