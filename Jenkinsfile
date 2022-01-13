@@ -1,14 +1,17 @@
 pipeline {    
   parameters {
-    choice(name: 'door_choice',
-      choices: 'one\ntwo\nthree\nfour',
-      description: 'What door do you choose?')
-    booleanParam(name: 'CAN_DANCE',
-      defaultValue: true,
-      description: 'Checkbox parameter')
-    string(name: 'sTrAnGePaRaM',
-      defaultValue: 'Dance!',
-      description: 'Do the funky chicken!')
+    choice(name: 'service_choice',
+      choices: 'admin\ngateway\nmongoDB',
+      description: 'What infrastructure service do you deploy?')
+    choice(name: 'deploy_env_choice',
+      choices: 'default\nDEV\nUAT',
+      description: 'deploy_all_fra_services')  
+    booleanParam(name: 'Re-deploy all Services',
+      defaultValue: false,
+      description: 'deploy all  infra services for application service')
+    string(name: 'deploy_reason',
+      defaultValue: 'General upgrading or Tesing new feature',
+      description: 'Given some reson when deploy all')
   }
 
     agent any
@@ -24,13 +27,13 @@ pipeline {
         }
 
         stage('Example') {
-        steps {
-            echo 'Hello World!'
-            echo "Trying: ${params.door_choice}"
-            echo "We can dance: ${params.CAN_DANCE}"
-            echo "The DJ says: ${params.sTrAnGePaRaM}"
-            input parameters ${params.door_choice}
-        }
+            steps {
+                echo 'Will do follow list'
+                echo "Chose Service: ${params.service_choice}"
+                echo "Chose Env: ${params.deploy_env_choice}"
+                echo "Deploy all services: ${params.deploy_all_services}"
+                echo "Why Deploy all: ${deploy_reason}"
+            }
         }
 
         stage("Env deploy") {
