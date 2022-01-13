@@ -262,7 +262,7 @@ pipeline {
                             echo "in project mongodb"
 
                             withEnv([
-                                        "SERVICE=mongo",
+                                        "SERVICE=mongodb",
                                         "NAMESPACE=${params.deploy_env_choice}",
                                         "TAG=latest"
                                     ]){
