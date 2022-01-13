@@ -43,23 +43,20 @@ pipeline {
                 ok "Yes, we should."
                 submitter "alice,bob"
                 parameters {
-                    string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
+                    string(name: 'PERSON', defaultValue: 'admin/gateway/mongoDB', description: 'Who should I say hello to?')
                 }
             }
 
-            when {
-                expression { ${PERSON} == 'admin' || params.region == 'gateway' || params.region == 'mongodb'}
-            }
             steps {
                 script {
-                    if(params.region == 'admin') {
+                    if(${PERSON} == 'admin') {
                         input message: "Proceed or Abort", submitter: "env admin",
-                        echo 'params.region is deploying'
+                        echo '${PERSON} is deploying'
                     } 
 
-                    if(params.region == 'gateway') {
-                        input message: "Proceed or Abort", submitter: "env admin",
-                        echo 'params.region is deploying'
+                    if(${PERSON} == 'gateway') {
+                        input message: "Proceed or Abort", submitter: "env gateway",
+                        echo '${PERSON} is deploying'
                     } 
                 }
             }
