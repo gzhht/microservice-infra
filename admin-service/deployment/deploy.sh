@@ -7,4 +7,4 @@ sed "s#{{service}}#$SERVICE#g; s#{{image}}#$IMAGE#g; s#{{namespace}}#$NAMESPACE#
 
 sed "s#{{service}}#$SERVICE#g; s#{{image}}#$IMAGE#g; s#{{namespace}}#$NAMESPACE#g; s#{{version}}#$VERSION#g" ./deployment/dev.yaml | kubectl apply -f -
 
-kubectl rollout restart deployment.apps/$SERVICE -n $namespace
+kubectl rollout restart deployment.apps/$SERVICE -n $NAMESPACE
