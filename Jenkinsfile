@@ -43,22 +43,12 @@ pipeline {
                 ok "Yes, we should."
                 submitter "alice,bob"
                 parameters {
-                    string(name: 'PERSON', defaultValue: 'admin/gateway/mongoDB', description: 'Who should I say hello to?')
+                    string(name: 'PERSON', defaultValue: 'Jason/Dave/Selina', description: 'Who process to deploy?')
                 }
             }
 
             steps {
-                script {
-                    if(${PERSON} == 'admin') {
-                        input message: "Proceed or Abort", submitter: "env admin",
-                        echo '${PERSON} is deploying'
-                    } 
-
-                    if(${PERSON} == 'gateway') {
-                        input message: "Proceed or Abort", submitter: "env gateway",
-                        echo '${PERSON} is deploying'
-                    } 
-                }
+                echo "Hello, ${PERSON}, executeing your choose."
             }
         }
 
