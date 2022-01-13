@@ -56,16 +56,16 @@ pipeline {
             steps {
                 dir("k8s") {
                     echo 'in k8s folder'
-                    sh "ll -a"
+                    sh "ls"
                     input message: 'Finished using the web site? (Click "Proceed" to continue)'
                     sh "cat privileges.yaml"
                     echo 'executing'
                 }
                 echo 'in man folder'
-                sh "ll -a"
+                sh "ls"
                 dir("admin-service") {
                     echo 'in admin-service folder'
-                    sh "ll -a"
+                    sh "ls -a"
                 }
             }
         }
