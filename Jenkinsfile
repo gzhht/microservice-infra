@@ -6,7 +6,7 @@ pipeline {
     choice(name: 'deploy_env_choice',
       choices: 'default\nDEV\nUAT',
       description: 'deploy_all_fra_services')  
-    booleanParam(name: 'Re-deploy all Services',
+    booleanParam(name: 'deploy_all_services',
       defaultValue: false,
       description: 'deploy all  infra services for application service')
     string(name: 'deploy_reason',
