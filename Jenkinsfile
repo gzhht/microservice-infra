@@ -105,6 +105,93 @@ pipeline {
             }  
         }
 
+        stage('Preparing image for chose services') {
+            parallel {
+                stage("Building admin service image") {
+                    
+                    agent any 
+                    when {
+                        expression { 
+                            return params.deploy_all_services == true || params.service_choice == 'admin'
+                        }
+                    }
+                    steps {
+                        
+                        echo "deploy admin-service"
+                        dir("admin-service") {
+                            
+                            echo "in project admin-service"
+
+                            withEnv([
+                                        "SERVICE=admin",
+                                        "TAG=latest"
+                                    ]){
+                                    /* Build the docker image */
+                                        sh 'echo "clear <none docker images>"'
+                                        sh "../ci-build/clear-images.sh"
+                                        echo "building docker image ..."
+                                        sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
+                                    }
+                        }
+                    }
+                }
+                stage("Building gateway service image") {
+                    
+                    agent any 
+                    when {
+                        expression { 
+                            return params.deploy_all_services == true || params.service_choice == 'gateway'
+                        }
+                    }
+                    steps {
+                        
+                        echo "deploy gateway-service"
+                        dir("gateway-service") {
+                            
+                            echo "in project gateway-service"
+
+                            withEnv([
+                                        "SERVICE=gateway",
+                                        "TAG=latest"
+                                    ]){
+                                    /* Build the docker image */
+                                        sh 'echo "clear <none docker images>"'
+                                        echo "building docker image ..."
+                                        sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
+                                    }
+                        }
+                    }
+                }
+                stage("Downloading mongoDB service") {
+                    
+                    agent any 
+                    when {
+                        expression { 
+                            return params.deploy_all_services == true || params.service_choice == 'mongodb'
+                        }
+                    }
+                    steps {
+                        
+                        echo "deploy mongodb"
+                        dir("mongodb") {
+                            
+                            echo "in project mongodb"
+
+                            withEnv([
+                                        "SERVICE=mongo",
+                                        "NAMESPACE=${params.deploy_env_choice}",
+                                        "TAG=latest"
+                                    ]){
+                                    /* Build the docker image */
+                                        echo "Downloading the image  ..."
+                                        sh "docker pull ${SERVICE}:${TAG} ."
+                                    }
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Deploying chose services') {
             parallel {
                 stage("Deploying admin service") {
@@ -127,11 +214,6 @@ pipeline {
                                         "NAMESPACE=${params.deploy_env_choice}",
                                         "TAG=latest"
                                     ]){
-                                    /* Build the docker image */
-                                        sh 'echo "clear <none docker images>"'
-                                        sh "../ci-build/clear-images.sh"
-                                        echo "building docker image ..."
-                                        sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
                                         echo "Deploy image to k8s cluster [env ${params.deploy_env_choice}]  ..."
                                         sh "./deployment/deploy.sh"
                                     }
@@ -158,10 +240,6 @@ pipeline {
                                         "NAMESPACE=${params.deploy_env_choice}",
                                         "TAG=latest"
                                     ]){
-                                    /* Build the docker image */
-                                        sh 'echo "clear <none docker images>"'
-                                        echo "building docker image ..."
-                                        sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
                                         echo "Deploy image to k8s cluster [env ${params.deploy_env_choice}]  ..."
                                         sh "./deployment/deploy.sh"
                                     }
@@ -184,7 +262,7 @@ pipeline {
                             echo "in project mongodb"
 
                             withEnv([
-                                        "SERVICE=mongodb",
+                                        "SERVICE=mongo",
                                         "NAMESPACE=${params.deploy_env_choice}",
                                         "TAG=latest"
                                     ]){
