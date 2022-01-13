@@ -194,8 +194,8 @@ pipeline {
             agent any
             
             steps {
-                dir("k8s") {
-                    echo 'in k8s folder'
+                dir("mongodb") {
+                    echo 'in mongodb folder'
                     sh "ls"
                     input message: 'Finished using the web site? (Click "Proceed" to continue)'
                     sh "cat privileges.yaml"
