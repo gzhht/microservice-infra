@@ -37,7 +37,12 @@ pipeline {
                 echo "Chose Service: ${params.service_choice}"
                 echo "Chose Env: ${params.deploy_env_choice}"
                 echo "Deploy all services: ${params.deploy_all_services}"
-                env.deploy_all_services = ${params.deploy_all_services}
+                environment {
+                   deploy_all_services = ${params.deploy_all_services}
+                }
+                // script{
+                //     env.deploy_all_services = ${params.deploy_all_services}
+                // }
                 echo "Why Deploy all: ${deploy_reason}"
             }
         }
