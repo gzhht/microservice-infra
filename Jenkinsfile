@@ -29,13 +29,23 @@ pipeline {
             echo "Trying: ${params.door_choice}"
             echo "We can dance: ${params.CAN_DANCE}"
             echo "The DJ says: ${params.sTrAnGePaRaM}"
+            input parameters ${params.door_choice}
         }
         }
 
         stage("Env deploy") {
             
+            input {
+                message "Should we continue?"
+                ok "Yes, we should."
+                submitter "alice,bob"
+                parameters {
+                    string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
+                }
+            }
+
             when {
-                expression { params.region == 'admin' || params.region == 'gateway' || params.region == 'mongodb'}
+                expression { ${PERSON} == 'admin' || params.region == 'gateway' || params.region == 'mongodb'}
             }
             steps {
                 script {
