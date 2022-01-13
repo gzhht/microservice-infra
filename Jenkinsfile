@@ -26,13 +26,48 @@ pipeline {
             }    
         }
 
-        stage('Example') {
+        stage('Deploy requirement') {
             steps {
                 echo 'Will do follow list'
                 echo "Chose Service: ${params.service_choice}"
                 echo "Chose Env: ${params.deploy_env_choice}"
                 echo "Deploy all services: ${params.deploy_all_services}"
                 echo "Why Deploy all: ${deploy_reason}"
+            }
+        }
+
+        stage('Deploying all services') {
+            when {
+                expression { 
+                   return ${params.deploy_all_services}
+                }
+            }
+            steps {
+                input message: "Process to deploy all services"
+                echo "deploying all"
+            }
+        }
+
+        stage('Deploying Single service') {
+            when {
+                expression { 
+                   return ${params.deploy_all_services} == false
+                }
+            }
+            steps {
+                agent {
+                    docker {
+                        image 'maven:3-alpine'
+                        args '-v /root/.m2:/root/.m2'
+                    }
+                }    
+                
+                input message: "Process to deploy ${params.service_choice}-service"
+                echo "deploying ${params.service_choice}-service"
+                dir("${params.service_choice}-service") {
+                    echo "in project ${params.service_choice}-service"
+                    sh 'mvn -B -DskipTests clean package'
+                }
             }
         }
 
