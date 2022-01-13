@@ -51,8 +51,8 @@ pipeline {
                 }
             }
             steps {
-                input message: "Process to deploy all services"
-                echo "deploying all"
+                input message: "Prepare parallel to Process deploying all services"
+                echo "deploying all ..."
             }
         }
 
@@ -72,10 +72,32 @@ pipeline {
                     }
                     steps {
                         
-                        echo "build ${params.service_choice}-service"
-                        dir("${params.service_choice}-service") {
+                        echo "build admin-service"
+                        dir("admin-service") {
                             
-                            echo "in project ${params.service_choice}-service"
+                            echo "in project admin-service"
+                            sh 'mvn -B -DskipTests clean package'
+                        }
+                    }
+                }
+                stage("Building gateway service") {
+                    agent {
+                        docker {
+                            image 'maven:3-alpine'
+                            args '-v /root/.m2:/root/.m2'
+                        }
+                    }    
+                    when {
+                        expression { 
+                            return params.deploy_all_services == true || params.service_choice == 'gateway'
+                        }
+                    }
+                    steps {
+                        
+                        echo "build gateway-service"
+                        dir("gateway-service") {
+                            
+                            echo "in project gateway-service"
                             sh 'mvn -B -DskipTests clean package'
                         }
                     }
@@ -102,6 +124,33 @@ pipeline {
 
                             withEnv([
                                         "SERVICE=${params.service_choice}",
+                                        "TAG=latest"
+                                    ]){
+                                    /* Build the docker image */
+                                        sh 'echo "clear <none docker images>"'
+                                        sh "../ci-build/clear-images.sh"
+                                        sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
+                                    }
+                        }
+                    }
+                }
+                stage("Deploying gateway service") {
+                    
+                    agent any 
+                    when {
+                        expression { 
+                            return params.deploy_all_services == true || params.service_choice == 'gateway'
+                        }
+                    }
+                    steps {
+                        
+                        echo "build gateway-service"
+                        dir("gateway-service") {
+                            
+                            echo "in project gateway-service"
+
+                            withEnv([
+                                        "SERVICE=gateway",
                                         "TAG=latest"
                                     ]){
                                     /* Build the docker image */
