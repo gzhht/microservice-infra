@@ -10,7 +10,10 @@ pipeline {
       defaultValue: 'Dance!',
       description: 'Do the funky chicken!')
   }
-  stages {
+
+    agent any
+
+    stages {
 
 
         stage('Clone repository') {
