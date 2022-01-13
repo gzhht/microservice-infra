@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{service}}
+  namespace: {{namespace}}
+  labels:
+    app: {{service}}
+    redeploy: {{version}}
+spec:
+  selector:
+    matchLabels:
+      app: {{service}}
+  template:
+    metadata:
+      labels:
+        app: {{service}}
+    spec:
+      containers:
+      - name: {{service}}
+        image: {{image}}
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: IfNotPresent
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{service}}
+data:
+  application.yml: |-
+    spring:
+     cloud:
+      kubernetes:
+        discovery:
+          all-namespaces: true
+          service-labels:
+            spring-boot: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{service}}
+spec:
+  type: NodePort
+  selector:
+    app: {{service}}
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+    nodePort: 32003

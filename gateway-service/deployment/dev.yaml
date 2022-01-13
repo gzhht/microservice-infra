@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{service}}
+  namespace: {{namespace}}
+  labels:
+    app: {{service}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{service}}
+  template:
+    metadata:
+      labels:
+        app: {{service}}
+    spec:
+      containers:
+      - name: {{service}}
+        image: {{image}}
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{service}}
+  labels:
+    app: {{service}}
+spec:
+  selector:
+    app: {{service}}
+  type: NodePort
+  ports:
+  - name: port-gateway
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+    nodePort: 32001

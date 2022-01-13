@@ -75,7 +75,7 @@ pipeline {
                         echo "build admin-service"
                         dir("admin-service") {
                             
-                            echo "in project admin-service"
+                            echo "Building in project admin-service"
                             sh 'mvn -B -DskipTests clean package'
                         }
                     }
@@ -97,7 +97,7 @@ pipeline {
                         echo "build gateway-service"
                         dir("gateway-service") {
                             
-                            echo "in project gateway-service"
+                            echo "Building in project gateway-service"
                             sh 'mvn -B -DskipTests clean package'
                         }
                     }
@@ -117,19 +117,23 @@ pipeline {
                     }
                     steps {
                         
-                        echo "build ${params.service_choice}-service"
-                        dir("${params.service_choice}-service") {
+                        echo "build admin-service"
+                        dir("admin-service") {
                             
-                            echo "in project ${params.service_choice}-service"
+                            echo "in project admin-service"
 
                             withEnv([
-                                        "SERVICE=${params.service_choice}",
+                                        "SERVICE=admin",
+                                        "NAMESPACE=${params.deploy_env_choice}",
                                         "TAG=latest"
                                     ]){
                                     /* Build the docker image */
                                         sh 'echo "clear <none docker images>"'
                                         sh "../ci-build/clear-images.sh"
+                                        echo "building docker image ..."
                                         sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
+                                        echo "Deploy image to k8s cluster [env ${params.deploy_env_choice}]  ..."
+                                        sh "./deployment/deploy.sh"
                                     }
                         }
                     }
@@ -151,12 +155,15 @@ pipeline {
 
                             withEnv([
                                         "SERVICE=gateway",
+                                        "NAMESPACE=${params.deploy_env_choice}",
                                         "TAG=latest"
                                     ]){
                                     /* Build the docker image */
                                         sh 'echo "clear <none docker images>"'
-                                        sh "../ci-build/clear-images.sh"
+                                        echo "building docker image ..."
                                         sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
+                                        echo "Deploy image to k8s cluster [env ${params.deploy_env_choice}]  ..."
+                                        sh "./deployment/deploy.sh"
                                     }
                         }
                     }
