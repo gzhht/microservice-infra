@@ -67,7 +67,7 @@ pipeline {
                     }    
                     when {
                         expression { 
-                            return params.deploy_all_services == true || params.service_choice = 'admin'
+                            return params.deploy_all_services == true || params.service_choice == 'admin'
                         }
                     }
                     steps {
@@ -90,7 +90,7 @@ pipeline {
                     agent any 
                     when {
                         expression { 
-                            return params.deploy_all_services == true || params.service_choice = 'admin'
+                            return params.deploy_all_services == true || params.service_choice == 'admin'
                         }
                     }
                     steps {
