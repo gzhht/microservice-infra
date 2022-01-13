@@ -1,7 +1,7 @@
 pipeline {    
   parameters {
     choice(name: 'service_choice',
-      choices: 'admin\ngateway\nmongoDB',
+      choices: 'admin\ngateway\nmongodb',
       description: 'What infrastructure service do you deploy?')
     choice(name: 'deploy_env_choice',
       choices: 'default\nDEV\nUAT',
