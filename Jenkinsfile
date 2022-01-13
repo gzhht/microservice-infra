@@ -32,15 +32,11 @@ pipeline {
 
             agent any
             
-            // environment {
-            //     deploy_all_services = ${params.deploy_all_services}
-            // }            
             steps {
                 echo 'Will do follow list'
                 echo "Chose Service: ${params.service_choice}"
                 echo "Chose Env: ${params.deploy_env_choice}"
                 echo "Deploy all services: ${params.deploy_all_services}"
-                // echo "Come from env : ${env.deploy_all_services}"
                 echo "Why Deploy all: ${deploy_reason}"
             }
         }
@@ -50,7 +46,6 @@ pipeline {
             agent any
             
             when {
-                // environment name: 'deploy_all_services', value: 'true'
                 expression { 
                    return params.deploy_all_services == true
                 }
@@ -78,8 +73,18 @@ pipeline {
                 input message: "Process to deploy ${params.service_choice}-service"
                 echo "deploying ${params.service_choice}-service"
                 dir("${params.service_choice}-service") {
+                    
                     echo "in project ${params.service_choice}-service"
                     sh 'mvn -B -DskipTests clean package'
+                    withEnv([
+                                "SERVICE=${params.service_choice}",
+                                "TAG=latest"
+                            ]){
+                            /* Build the docker image */
+                                sh 'echo "clear <none docker images>"'
+                                sh "./ci-build/clear-images.sh"
+                                sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
+                            }
                 }
             }
         }
