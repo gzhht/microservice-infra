@@ -56,35 +56,60 @@ pipeline {
             }
         }
 
-        stage('Deploying Single service') {
-            agent {
-                docker {
-                    image 'maven:3-alpine'
-                    args '-v /root/.m2:/root/.m2'
-                }
-            }    
-            when {
-                expression { 
-                   return params.deploy_all_services == false
+        stage('Building chose services') {
+            parallel {
+                stage("Building ${params.service_choice} service") {
+                    agent {
+                        docker {
+                            image 'maven:3-alpine'
+                            args '-v /root/.m2:/root/.m2'
+                        }
+                    }    
+                    when {
+                        expression { 
+                        return params.deploy_all_services == false
+                        }
+                    }
+                    steps {
+                        
+                        echo "build ${params.service_choice}-service"
+                        dir("${params.service_choice}-service") {
+                            
+                            echo "in project ${params.service_choice}-service"
+                            sh 'mvn -B -DskipTests clean package'
+                    }
                 }
             }
-            steps {
-                
-                input message: "Process to deploy ${params.service_choice}-service"
-                echo "deploying ${params.service_choice}-service"
-                dir("${params.service_choice}-service") {
+        }
+
+        stage('Deploying chose services') {
+            parallel {
+                stage("Deploying ${params.service_choice} service") {
                     
-                    echo "in project ${params.service_choice}-service"
-                    sh 'mvn -B -DskipTests clean package'
-                    withEnv([
-                                "SERVICE=${params.service_choice}",
-                                "TAG=latest"
-                            ]){
-                            /* Build the docker image */
-                                sh 'echo "clear <none docker images>"'
-                                sh "../ci-build/clear-images.sh"
-                                sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
-                            }
+                    agent any 
+                    when {
+                        expression { 
+                        return params.deploy_all_services == false
+                        }
+                    }
+                    steps {
+                        
+                        echo "build ${params.service_choice}-service"
+                        dir("${params.service_choice}-service") {
+                            
+                            echo "in project ${params.service_choice}-service"
+
+                            withEnv([
+                                        "SERVICE=${params.service_choice}",
+                                        "TAG=latest"
+                                    ]){
+                                    /* Build the docker image */
+                                        sh 'echo "clear <none docker images>"'
+                                        sh "../ci-build/clear-images.sh"
+                                        sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
+                                    }
+                        }
+                    }
                 }
             }
         }
