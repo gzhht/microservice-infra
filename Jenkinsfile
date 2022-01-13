@@ -11,6 +11,15 @@ pipeline {
       description: 'Do the funky chicken!')
   }
   stages {
+
+
+    stage('Clone repository') {
+        steps {
+        /* Clone our repository */
+            checkout scm
+        }    
+    }
+
     stage('Example') {
       steps {
         echo 'Hello World!'
@@ -20,6 +29,7 @@ pipeline {
       }
 
     stage("Env deploy") {
+        
         when {
             expression { params.region == 'admin' || params.region == 'gateway' || params.region == 'mongodb'}
         }
