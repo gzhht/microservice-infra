@@ -14,11 +14,11 @@ pipeline {
       description: 'Given some reson when deploy all')
   }
 
-    agent any
+    agent none
 
     stages {
 
-
+        agent any
         stage('Clone repository') {
             steps {
             /* Clone our repository */
@@ -48,13 +48,14 @@ pipeline {
             }
         }
 
+        agent {
+            docker {
+                image 'maven:3-alpine'
+                args '-v /root/.m2:/root/.m2'
+            }
+        }    
         stage('Deploying Single service') {
-            agent {
-                docker {
-                    image 'maven:3-alpine'
-                    args '-v /root/.m2:/root/.m2'
-                }
-            }    
+
             when {
                 expression { 
                    return ${params.deploy_all_services} == false
@@ -71,6 +72,7 @@ pipeline {
             }
         }
 
+        agent any
         stage("Env deploy") {
             
             input {
