@@ -4,7 +4,7 @@ pipeline {
       choices: 'admin\ngateway\nmongodb',
       description: 'What infrastructure service do you deploy?')
     choice(name: 'deploy_env_choice',
-      choices: 'default\nDEV\nUAT',
+      choices: 'default\ndev\nuat',
       description: 'deploy_all_fra_services')  
     booleanParam(name: 'deploy_all_services',
       defaultValue: false,
