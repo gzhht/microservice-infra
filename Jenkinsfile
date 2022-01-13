@@ -41,9 +41,10 @@ pipeline {
                 echo "Chose Service: ${params.service_choice}"
                 echo "Chose Env: ${params.deploy_env_choice}"
                 echo "Deploy all services: ${params.deploy_all_services}"
-                // script{
-                //     env.deploy_all_services = ${params.deploy_all_services}
-                // }
+                def deploy_all_services = ${params.deploy_all_services}
+                script{
+                    env.deploy_all_services = deploy_all_services
+                }
                 echo "Come from env : ${env.deploy_all_services}"
                 echo "Why Deploy all: ${deploy_reason}"
             }
@@ -54,7 +55,7 @@ pipeline {
             agent any
             
             when {
-                // environment name: 'deploy_all_services', value: 'true'
+                environment name: 'deploy_all_services', value: 'true'
                 parameters name: 'deploy_all_services', value: 'true'
             }
             steps {
@@ -71,7 +72,7 @@ pipeline {
                 }
             }    
             when {
-                parameters name: 'deploy_all_services', value: 'true'
+                environment name: 'deploy_all_services', value: 'true'
             }
             steps {
                 
