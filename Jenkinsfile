@@ -58,7 +58,7 @@ pipeline {
 
         stage('Building chose services') {
             parallel {
-                stage("Building ${params.service_choice} service") {
+                stage("Building admin service") {
                     agent {
                         docker {
                             image 'maven:3-alpine'
@@ -67,7 +67,7 @@ pipeline {
                     }    
                     when {
                         expression { 
-                        return params.deploy_all_services == false
+                            return params.deploy_all_services == true || params.service_choice = 'admin'
                         }
                     }
                     steps {
@@ -82,15 +82,15 @@ pipeline {
                 }
             }  
         }
-        
+
         stage('Deploying chose services') {
             parallel {
-                stage("Deploying ${params.service_choice} service") {
+                stage("Deploying admin service") {
                     
                     agent any 
                     when {
                         expression { 
-                        return params.deploy_all_services == false
+                            return params.deploy_all_services == true || params.service_choice = 'admin'
                         }
                     }
                     steps {
