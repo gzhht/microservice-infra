@@ -82,7 +82,7 @@ pipeline {
                             ]){
                             /* Build the docker image */
                                 sh 'echo "clear <none docker images>"'
-                                sh "./ci-build/clear-images.sh"
+                                sh "../ci-build/clear-images.sh"
                                 sh "docker build --no-cache -t ${SERVICE}:${TAG} ."
                             }
                 }
