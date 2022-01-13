@@ -184,7 +184,7 @@ pipeline {
                                     ]){
                                     /* Build the docker image */
                                         echo "Downloading the image  ..."
-                                        sh "docker pull ${SERVICE}:${TAG} ."
+                                        sh "docker pull ${SERVICE}:${TAG}"
                                     }
                         }
                     }
