@@ -77,11 +77,12 @@ pipeline {
                             
                             echo "in project ${params.service_choice}-service"
                             sh 'mvn -B -DskipTests clean package'
+                        }
                     }
                 }
-            }
+            }  
         }
-
+        
         stage('Deploying chose services') {
             parallel {
                 stage("Deploying ${params.service_choice} service") {
