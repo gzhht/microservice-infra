@@ -32,14 +32,15 @@ pipeline {
 
             agent any
             
+            environment {
+                deploy_all_services = ${params.deploy_all_services}
+            }            
+
             steps {
                 echo 'Will do follow list'
                 echo "Chose Service: ${params.service_choice}"
                 echo "Chose Env: ${params.deploy_env_choice}"
                 echo "Deploy all services: ${params.deploy_all_services}"
-                environment {
-                   deploy_all_services = ${params.deploy_all_services}
-                }
                 // script{
                 //     env.deploy_all_services = ${params.deploy_all_services}
                 // }
