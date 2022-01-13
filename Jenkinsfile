@@ -117,7 +117,7 @@ pipeline {
                     }
                     steps {
                         
-                        echo "build admin-service"
+                        echo "deploy admin-service"
                         dir("admin-service") {
                             
                             echo "in project admin-service"
@@ -148,7 +148,7 @@ pipeline {
                     }
                     steps {
                         
-                        echo "build gateway-service"
+                        echo "deploy gateway-service"
                         dir("gateway-service") {
                             
                             echo "in project gateway-service"
@@ -168,44 +168,32 @@ pipeline {
                         }
                     }
                 }
-            }
-        }
+                stage("Deploying mongoDB service") {
+                    
+                    agent any 
+                    when {
+                        expression { 
+                            return params.deploy_all_services == true || params.service_choice == 'mongodb'
+                        }
+                    }
+                    steps {
+                        
+                        echo "deploy mongodb"
+                        dir("mongodb") {
+                            
+                            echo "in project mongodb"
 
-        stage("Env deploy") {
-            
-            agent any
-            
-            input {
-                message "Should we continue?"
-                ok "Yes, we should."
-                submitter "alice,bob"
-                parameters {
-                    string(name: 'PERSON', defaultValue: 'Jason/Dave/Selina', description: 'Who process to deploy?')
-                }
-            }
-
-            steps {
-                echo "Hello, ${PERSON}, executeing your choose."
-            }
-        }
-
-        stage('Deliver for development') {
-
-            agent any
-            
-            steps {
-                dir("mongodb") {
-                    echo 'in mongodb folder'
-                    sh "ls"
-                    input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                    sh "cat privileges.yaml"
-                    echo 'executing'
-                }
-                echo 'in man folder'
-                sh "ls"
-                dir("admin-service") {
-                    echo 'in admin-service folder'
-                    sh "ls -a"
+                            withEnv([
+                                        "SERVICE=mongodb",
+                                        "NAMESPACE=${params.deploy_env_choice}",
+                                        "TAG=latest"
+                                    ]){
+                                    /* Build the docker image */
+                                        echo "Deploy image to k8s cluster [env ${params.deploy_env_choice}]  ..."
+                                        sh "./deployment/deploy.sh"
+                                    }
+                        }
+                    }
                 }
             }
         }
