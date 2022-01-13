@@ -49,18 +49,18 @@ pipeline {
         }
 
         stage('Deploying Single service') {
+            agent {
+                docker {
+                    image 'maven:3-alpine'
+                    args '-v /root/.m2:/root/.m2'
+                }
+            }    
             when {
                 expression { 
                    return ${params.deploy_all_services} == false
                 }
             }
             steps {
-                agent {
-                    docker {
-                        image 'maven:3-alpine'
-                        args '-v /root/.m2:/root/.m2'
-                    }
-                }    
                 
                 input message: "Process to deploy ${params.service_choice}-service"
                 echo "deploying ${params.service_choice}-service"
