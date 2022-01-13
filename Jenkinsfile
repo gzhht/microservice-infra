@@ -19,6 +19,9 @@ pipeline {
     stages {
 
         stage('Clone repository') {
+
+            agent any
+
             steps {
             /* Clone our repository */
                 checkout scm
@@ -26,6 +29,9 @@ pipeline {
         }
 
         stage('Deploy requirement') {
+
+            agent any
+            
             steps {
                 echo 'Will do follow list'
                 echo "Chose Service: ${params.service_choice}"
@@ -36,6 +42,9 @@ pipeline {
         }
 
         stage('Deploying all services') {
+
+            agent any
+            
             when {
                 expression { 
                    return ${params.deploy_all_services}
@@ -72,6 +81,8 @@ pipeline {
 
         stage("Env deploy") {
             
+            agent any
+            
             input {
                 message "Should we continue?"
                 ok "Yes, we should."
@@ -87,6 +98,9 @@ pipeline {
         }
 
         stage('Deliver for development') {
+
+            agent any
+            
             steps {
                 dir("k8s") {
                     echo 'in k8s folder'
